@@ -30,7 +30,7 @@ class {{ schema_name }}(BaseModel):
 
     {% for property in properties %}
 
-    {{ property.name | replace("@","") | replace("-","_") }} : {{ property.type.converted_type | safe }} = Field(alias="{{ property.name }}" {% if not property.required %}, default = {{ property.default }} {% endif %})
+    {{ (property.name | replace("@","") | replace("-","_") + "_" if property.name | replace("@","") | replace("-","_") in ["with", "from", "return", "class", "def", "if", "else", "elif", "for", "while", "try", "except", "finally", "import", "as", "global", "nonlocal", "lambda", "and", "or", "not", "in", "is", "True", "False", "None", "pass", "break", "continue", "yield", "async", "await"] else property.name | replace("@","") | replace("-","_")) }} : {{ property.type.converted_type | safe }} = Field(alias="{{ property.name }}" {% if not property.required %}, default = {{ property.default }} {% endif %})
     {% endfor %}
 
 {% endif %}

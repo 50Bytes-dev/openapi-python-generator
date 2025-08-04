@@ -183,7 +183,8 @@ def generate_params(
                     f"Unsupported media type schema for {str(operation)}"
                 )  # pragma: no cover
         elif isinstance(operation.requestBody, Reference):
-            params += f"data : {operation.requestBody.ref.split('/')[-1]}, "
+            ref_name = operation.requestBody.ref.split("/")[-1]
+            params += f"data : {pascalcase(ref_name)}, "
         else:
             raise Exception(
                 f"Unsupported request body type: {type(operation.requestBody)}"

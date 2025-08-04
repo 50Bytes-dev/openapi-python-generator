@@ -47,6 +47,59 @@ def write_code(path: Path, content) -> None:
         raise e
 
 
+def _fix_openapi_data(data: dict) -> dict:
+    """
+    Fix common OpenAPI validation issues in the data.
+
+    :param data: The raw OpenAPI data dictionary
+    :return: Fixed OpenAPI data dictionary
+    """
+    import copy
+
+    data = copy.deepcopy(data)
+
+    def fix_schema_recursively(obj):
+        if isinstance(obj, dict):
+            # Fix invalid type values
+            if "type" in obj and isinstance(obj["type"], str):
+                type_mappings = {
+                    "file": "string",
+                    "array of strings": "array",
+                    "int": "integer",
+                    "int64": "integer",
+                    "timestamp": "string",
+                    "enum": "string",
+                }
+                if obj["type"] in type_mappings:
+                    original_type = obj["type"]
+                    obj["type"] = type_mappings[original_type]
+                    # Add format for specific types
+                    if original_type == "timestamp":
+                        obj["format"] = "date-time"
+                    elif original_type == "int64":
+                        obj["format"] = "int64"
+
+                # Fix array of strings type
+                if obj["type"] == "array" and "items" not in obj:
+                    obj["items"] = {"type": "string"}
+
+            # Fix incorrect required field format
+            if "required" in obj and isinstance(obj["required"], bool):
+                # This should be handled at the parent level, remove it here
+                del obj["required"]
+
+            # Recursively process all values
+            for key, value in obj.items():
+                obj[key] = fix_schema_recursively(value)
+
+        elif isinstance(obj, list):
+            return [fix_schema_recursively(item) for item in obj]
+
+        return obj
+
+    return fix_schema_recursively(data)
+
+
 def get_open_api(source: Union[str, Path]) -> Any:
     """
     Tries to fetch the openapi.json file from the web or load from a local file. Returns the according OpenAPI object.
@@ -79,7 +132,7 @@ def get_open_api(source: Union[str, Path]) -> Any:
 
     try:
         data = orjson.loads(text)
-    except:
+    except Exception:
         data = yaml.safe_load(text)
 
     if data["openapi"].startswith("3.0"):
@@ -88,6 +141,9 @@ def get_open_api(source: Union[str, Path]) -> Any:
     else:
         openapi_python_generator.OPENAPI_VERSION = "3.1"
         from openapi_pydantic.v3.v3_1 import OpenAPI
+
+    # Preprocess data to fix common OpenAPI validation issues
+    data = _fix_openapi_data(data)
 
     return OpenAPI(**data)
 
