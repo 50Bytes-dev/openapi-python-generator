@@ -84,10 +84,10 @@ def get_open_api(source: Union[str, Path]) -> Any:
 
     if data["openapi"].startswith("3.0"):
         openapi_python_generator.OPENAPI_VERSION = "3.0"
-        from openapi_pydantic.v3.v3_0_3.open_api import OpenAPI
+        from openapi_pydantic.v3.v3_0 import OpenAPI
     else:
         openapi_python_generator.OPENAPI_VERSION = "3.1"
-        from openapi_pydantic.v3.v3_1_0.open_api import OpenAPI
+        from openapi_pydantic.v3.v3_1 import OpenAPI
 
     return OpenAPI(**data)
 

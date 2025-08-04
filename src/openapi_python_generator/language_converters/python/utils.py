@@ -10,13 +10,9 @@ from openapi_python_generator.models import Property
 from openapi_python_generator.models import TypeConversion
 
 if openapi_python_generator.OPENAPI_VERSION == "3.0":
-    from openapi_pydantic.v3.v3_0_3.reference import Reference
-    from openapi_pydantic.v3.v3_0_3.schema import Schema
-    from openapi_pydantic.v3.v3_0_3.parameter import Parameter
+    from openapi_pydantic.v3.v3_0 import Reference, Schema, Parameter
 else:
-    from openapi_pydantic import Reference
-    from openapi_pydantic import Schema
-    from openapi_pydantic import Parameter
+    from openapi_pydantic.v3.v3_1 import Reference, Schema, Parameter
 
 
 def _generate_property_from_reference(

@@ -2,9 +2,9 @@ from typing import Optional
 from openapi_python_generator import OPENAPI_VERSION
 
 if OPENAPI_VERSION == "3.0":
-    from openapi_pydantic.v3.v3_0_3.open_api import OpenAPI
+    from openapi_pydantic.v3.v3_0 import OpenAPI
 else:
-    from openapi_pydantic import OpenAPI
+    from openapi_pydantic.v3.v3_1 import OpenAPI
 
 from openapi_python_generator.language_converters.python import common
 from openapi_python_generator.language_converters.python.api_config_generator import (

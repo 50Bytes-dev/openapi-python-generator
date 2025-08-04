@@ -32,19 +32,23 @@ from openapi_python_generator.language_converters.python.jinja_config import (
 from openapi_python_generator.models import Model
 
 if openapi_python_generator.OPENAPI_VERSION == "3.0":
-    from openapi_pydantic.v3.v3_0_3.components import Components
-    from openapi_pydantic.v3.v3_0_3.reference import Reference
-    from openapi_pydantic.v3.v3_0_3.path_item import PathItem
-    from openapi_pydantic.v3.v3_0_3.operation import Operation
-    from openapi_pydantic.v3.v3_0_3.response import Response
-    from openapi_pydantic.v3.v3_0_3.schema import Schema
+    from openapi_pydantic.v3.v3_0 import (
+        Components,
+        Reference,
+        PathItem,
+        Operation,
+        Response,
+        Schema,
+    )
 else:
-    from openapi_pydantic import Components
-    from openapi_pydantic import Reference
-    from openapi_pydantic import PathItem
-    from openapi_pydantic import Operation
-    from openapi_pydantic import Response
-    from openapi_pydantic import Schema
+    from openapi_pydantic.v3.v3_1 import (
+        Components,
+        Reference,
+        PathItem,
+        Operation,
+        Response,
+        Schema,
+    )
 
 
 def generate_models(

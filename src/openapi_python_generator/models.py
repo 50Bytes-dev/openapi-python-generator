@@ -7,13 +7,9 @@ from pydantic import BaseModel, field_validator
 import openapi_python_generator
 
 if openapi_python_generator.OPENAPI_VERSION == "3.0":
-    from openapi_pydantic.v3.v3_0_3.operation import Operation
-    from openapi_pydantic.v3.v3_0_3.path_item import PathItem
-    from openapi_pydantic.v3.v3_0_3.schema import Schema
+    from openapi_pydantic.v3.v3_0 import Operation, PathItem, Schema
 else:
-    from openapi_pydantic import Operation
-    from openapi_pydantic import PathItem
-    from openapi_pydantic import Schema
+    from openapi_pydantic.v3.v3_1 import Operation, PathItem, Schema
 
 
 class TypeConversion(BaseModel):
@@ -38,6 +34,7 @@ class ServiceOperation(BaseModel):
     operation: Operation
     pathItem: PathItem
     content: str
+    base_path: str = ""
     async_client: Optional[bool] = False
     tag: Optional[str] = None
     path_name: str

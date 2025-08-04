@@ -15,25 +15,29 @@ import openapi_python_generator
 from openapi_python_generator.language_converters.python.utils import type_converter
 
 if openapi_python_generator.OPENAPI_VERSION == "3.0":
-    from openapi_pydantic.v3.v3_0_3.media_type import MediaType
-    from openapi_pydantic.v3.v3_0_3.operation import Operation
-    from openapi_pydantic.v3.v3_0_3.parameter import Parameter
-    from openapi_pydantic.v3.v3_0_3.path_item import PathItem
-    from openapi_pydantic.v3.v3_0_3.reference import Reference
-    from openapi_pydantic.v3.v3_0_3.request_body import RequestBody
-    from openapi_pydantic.v3.v3_0_3.response import Response
-    from openapi_pydantic.v3.v3_0_3.schema import Schema
-    from openapi_pydantic.v3.v3_0_3.components import Components
+    from openapi_pydantic.v3.v3_0 import (
+        MediaType,
+        Operation,
+        Parameter,
+        PathItem,
+        Reference,
+        RequestBody,
+        Response,
+        Schema,
+        Components,
+    )
 else:
-    from openapi_pydantic import MediaType
-    from openapi_pydantic import Operation
-    from openapi_pydantic import Parameter
-    from openapi_pydantic import PathItem
-    from openapi_pydantic import Reference
-    from openapi_pydantic import RequestBody
-    from openapi_pydantic import Response
-    from openapi_pydantic import Schema
-    from openapi_pydantic import Components
+    from openapi_pydantic.v3.v3_1 import (
+        MediaType,
+        Operation,
+        Parameter,
+        PathItem,
+        Reference,
+        RequestBody,
+        Response,
+        Schema,
+        Components,
+    )
 
 from openapi_python_generator.language_converters.python import common
 from openapi_python_generator.language_converters.python.common import normalize_symbol
@@ -366,6 +370,7 @@ def generate_services(
             operation=op,
             pathItem=path,
             content="",
+            base_path=op.servers[0].url if op.servers else "",
             async_client=async_type,
             body_param=body_param,
             path_name=path_name,
@@ -380,7 +385,7 @@ def generate_services(
         if op.tags is not None and len(op.tags) > 0:
             tag = op.tags[0]
             if tag is not None:
-                tag = GoogleTranslator(source="auto", target="en").translate(tag)
+                # tag = GoogleTranslator(source="auto", target="en").translate(tag)
                 tag = snakecase(tag)
                 so.tag = normalize_symbol(tag)
 
@@ -398,6 +403,9 @@ def generate_services(
             op = path.__getattribute__(http_operation)
             if op is None:
                 continue
+
+            if path.servers:
+                op.servers = path.servers
 
             if library_config.include_sync:
                 sync_so = generate_service_operation(op, path_name, False)
