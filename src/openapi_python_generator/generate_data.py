@@ -79,8 +79,28 @@ def _fix_openapi_data(data: dict) -> dict:
                     elif original_type == "int64":
                         obj["format"] = "int64"
 
-                # Fix array of strings type
-                if obj["type"] == "array" and "items" not in obj:
+                # Fix string type with int64 format - should be integer
+                if obj["type"] == "string" and obj.get("format") == "int64":
+                    obj["type"] = "integer"
+                    # Keep the format for clarity
+                    obj["format"] = "int64"
+
+                # Fix common fields that are often numeric but defined as string
+                field_name = (obj.get("description") or "").lower()
+                if obj["type"] == "string" and (
+                    "sku" in field_name
+                    or "идентификатор" in field_name
+                    or "quantity" in field_name
+                    or "количество" in field_name
+                    or "count" in field_name
+                ):
+                    # Use Union to allow both string and integer for flexibility
+                    obj["anyOf"] = [{"type": "string"}, {"type": "integer"}]
+                    # Remove the original type to avoid conflict
+                    del obj["type"]
+
+                # Fix array of strings type (only if type still exists)
+                if obj.get("type") == "array" and "items" not in obj:
                     obj["items"] = {"type": "string"}
 
             # Fix incorrect required field format
