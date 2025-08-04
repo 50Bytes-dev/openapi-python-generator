@@ -200,9 +200,11 @@ def generate_operation_id(
     operation: Operation, http_op: str, path_name: Optional[str] = None
 ) -> str:
     if operation.operationId is not None:
-        return common.normalize_symbol(operation.operationId)
+        normalized = common.normalize_symbol(operation.operationId)
+        return snakecase(normalized)
     elif path_name is not None:
-        return common.normalize_symbol(f"{http_op}_{path_name}")
+        normalized = common.normalize_symbol(f"{http_op}_{path_name}")
+        return snakecase(normalized)
     else:
         raise Exception(
             f"OperationId is not defined for {http_op} of path_name {path_name} --> {operation.summary}"
